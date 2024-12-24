@@ -1,17 +1,22 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Footer from '../components/Footer';
+import { AuthContext } from '../AppNavigator';
 
-const HomeScreen = ({ navigation, loggedInUser }) => (
-  <View style={styles.container}>
-    <View style={styles.contentContainer}>
-      <Text style={styles.welcomeText}>
-        Welcome to the Home Screen, {loggedInUser?.name || 'Guest'}!
-      </Text>
+const HomeScreen = ({ navigation }) => {
+  const { loggedInUser } = useContext(AuthContext);
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.contentContainer}>
+        <Text style={styles.welcomeText}>
+          Welcome to the Home Screen, {loggedInUser?.name || 'Guest'}!
+        </Text>
+      </View>
+      <Footer navigation={navigation} />
     </View>
-    <Footer navigation={navigation} loggedInUser={loggedInUser} />
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
