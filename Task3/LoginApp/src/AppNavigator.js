@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, createContext, useContext } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
@@ -9,26 +9,33 @@ import HomeScreen from './screens/HomeScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
 
 const Stack = createStackNavigator();
+export const AuthContext = createContext(null);
 
-const CustomHeader = ({ userName, onLogout }) => (
-  <View style={styles.headerContainer}>
-    <Text style={styles.headerLeft}>{userName || 'Guest'}</Text>
-    <TouchableOpacity onPress={onLogout}>
-      <Text style={styles.headerRight}>Logout</Text>
-    </TouchableOpacity>
-  </View>
-);
+const CustomHeader = ({ onLogout }) => {
+  const { loggedInUser } = useContext(AuthContext);
+  return (
+    <View style={styles.headerContainer}>
+      <Text style={styles.headerLeft}>{loggedInUser?.name || 'Guest'}</Text>
+      <TouchableOpacity onPress={onLogout}>
+        <Text style={styles.headerRight}>Logout</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
-const Footer = ({ navigation, loggedInUser }) => (
-  <View style={styles.footerContainer}>
-    <TouchableOpacity onPress={() => navigation.navigate('Home', { loggedInUser })}>
-      <Text style={styles.footerText}>Home</Text>
-    </TouchableOpacity>
-    <TouchableOpacity onPress={() => navigation.navigate('Profile', { loggedInUser })}>
-      <Text style={styles.footerText}>Profile</Text>
-    </TouchableOpacity>
-  </View>
-);
+const Footer = ({ navigation }) => {
+  const { loggedInUser } = useContext(AuthContext);
+  return (
+    <View style={styles.footerContainer}>
+      <TouchableOpacity onPress={() => navigation.navigate('Home', { loggedInUser })}>
+        <Text style={styles.footerText}>Home</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Profile', { loggedInUser })}>
+        <Text style={styles.footerText}>Profile</Text>
+      </TouchableOpacity>
+    </View>
+  );
+};
 
 const AppNavigator = () => {
   const [loggedInUser, setLoggedInUser] = useState(null);
@@ -42,54 +49,53 @@ const AppNavigator = () => {
   };
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Login"
-        screenOptions={{
-          header: ({ navigation, route }) => (
-            <CustomHeader
-              userName={loggedInUser?.name}
-              onLogout={() => handleLogout(navigation)}
-            />
-          ),
-        }}
-      >
-        <Stack.Screen
-          name="Login"
-          options={{ headerShown: true }}
+    <AuthContext.Provider value={{ loggedInUser, setLoggedInUser }}>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Login"
+          screenOptions={{
+            header: ({ navigation }) => (
+              <CustomHeader onLogout={() => handleLogout(navigation)} />
+            ),
+          }}
         >
-          {(props) => (
-            <LoginScreen {...props} setLoggedInUser={setLoggedInUser} />
-          )}
-        </Stack.Screen>
-        <Stack.Screen
-          name="Signup"
-          component={SignupScreen}
-          options={{ headerShown: true }}
-        />
-        <Stack.Screen
-          name="Profile"
-          options={{ headerShown: true }}
-        >
-          {(props) => (
-            <ProfileScreen {...props} loggedInUser={loggedInUser} />
-          )}
-        </Stack.Screen>
-        <Stack.Screen
-          name="Home"
-          options={{ headerShown: true }}
-        >
-          {(props) => (
-            <HomeScreen {...props} loggedInUser={loggedInUser} />
-          )}
-        </Stack.Screen>
-        <Stack.Screen
-          name="ForgotPassword"
-          component={ForgotPasswordScreen}
-          options={{ headerShown: true }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          <Stack.Screen
+            name="Login"
+            options={{ headerShown: true }}
+          >
+            {(props) => (
+              <LoginScreen {...props} setLoggedInUser={setLoggedInUser} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Signup"
+            component={SignupScreen}
+            options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="Profile"
+            options={{ headerShown: true }}
+          >
+            {(props) => (
+              <ProfileScreen {...props} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen
+            name="Home"
+            options={{ headerShown: true }}
+          >
+            {(props) => (
+              <HomeScreen {...props} />
+            )}
+          </Stack.Screen>
+          <Stack.Screen
+            name="ForgotPassword"
+            component={ForgotPasswordScreen}
+            options={{ headerShown: true }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 };
 
