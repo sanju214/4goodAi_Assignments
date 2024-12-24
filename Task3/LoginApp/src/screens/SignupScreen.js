@@ -1,19 +1,28 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
 import Footer from '../components/Footer';
 
 const SignupScreen = ({ navigation }) => {
-  const { control, handleSubmit, formState: { errors } } = useForm();
+  const { control, handleSubmit, formState: { errors }, reset } = useForm();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = async (data) => {
+    setIsLoading(true);
     try {
-      await axios.post('http://localhost:5000/signup', data);
+      const response = await axios.post('http://localhost:5000/signup', data);
       alert('Signup successful! Please login.');
+      reset();
       navigation.navigate('Login');
     } catch (error) {
-      console.error(error);
+      if (error.response?.data?.message) {
+        alert(error.response.data.message);
+      } else {
+        alert('Something went wrong. Please try again.');
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -41,12 +50,16 @@ const SignupScreen = ({ navigation }) => {
         <Controller
           control={control}
           name="email"
-          rules={{ required: 'Email is required' }}
+          rules={{
+            required: 'Email is required',
+            pattern: { value: /^\S+@\S+\.\S+$/, message: 'Invalid email format' },
+          }}
           render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
               placeholder="Email"
               placeholderTextColor="#6C63FF"
+              keyboardType="email-address"
               onChangeText={onChange}
               value={value}
             />
@@ -57,7 +70,10 @@ const SignupScreen = ({ navigation }) => {
         <Controller
           control={control}
           name="password"
-          rules={{ required: 'Password is required' }}
+          rules={{
+            required: 'Password is required',
+            minLength: { value: 6, message: 'Password must be at least 6 characters' },
+          }}
           render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
@@ -80,6 +96,7 @@ const SignupScreen = ({ navigation }) => {
               style={styles.input}
               placeholder="Age"
               placeholderTextColor="#6C63FF"
+              keyboardType="numeric"
               onChangeText={onChange}
               value={value}
             />
@@ -106,12 +123,16 @@ const SignupScreen = ({ navigation }) => {
         <Controller
           control={control}
           name="contact"
-          rules={{ required: 'Contact is required' }}
+          rules={{
+            required: 'Contact is required',
+            pattern: { value: /^[0-9]{10}$/, message: 'Contact must be 10 digits' },
+          }}
           render={({ field: { onChange, value } }) => (
             <TextInput
               style={styles.input}
               placeholder="Contact Number"
               placeholderTextColor="#6C63FF"
+              keyboardType="phone-pad"
               onChangeText={onChange}
               value={value}
             />
@@ -122,8 +143,13 @@ const SignupScreen = ({ navigation }) => {
         <TouchableOpacity
           style={styles.button}
           onPress={handleSubmit(onSubmit)}
+          disabled={isLoading}
         >
-          <Text style={styles.buttonText}>Register Now</Text>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.buttonText}>Register Now</Text>
+          )}
         </TouchableOpacity>
       </View>
       <Footer navigation={navigation} />
@@ -172,9 +198,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#6C63FF',
     padding: 15,
     borderRadius: 10,
+    alignItems: 'center',
   },
   buttonText: {
-    textAlign: 'center',
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
