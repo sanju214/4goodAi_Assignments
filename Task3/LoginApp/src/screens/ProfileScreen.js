@@ -1,27 +1,32 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import Footer from '../components/Footer';
+import { AuthContext } from '../AppNavigator';
 
-const ProfileScreen = ({ route, navigation, loggedInUser }) => {
-  const user = route.params?.loggedInUser || loggedInUser || {};
+const ProfileScreen = ({ navigation }) => {
+  const { loggedInUser } = useContext(AuthContext);
 
   return (
     <View style={styles.container}>
       <View style={styles.profileContainer}>
         <Image
-          source={{ uri: 'https://t4.ftcdn.net/jpg/04/83/90/95/360_F_483909569_OI4LKNeFgHwvvVju60fejLd9gj43dIcd.jpg' }}
+          source={{
+            uri: 'https://t4.ftcdn.net/jpg/04/83/90/95/360_F_483909569_OI4LKNeFgHwvvVju60fejLd9gj43dIcd.jpg',
+          }}
           style={styles.avatar}
         />
-        <Text style={styles.welcomeText}>Welcome, {user.name || 'Guest'}</Text>
+        <Text style={styles.welcomeText}>
+          Welcome, {loggedInUser?.name || 'Guest'}
+        </Text>
         <View style={styles.detailsContainer}>
-          <Text style={styles.label}>Name: {user.name || 'N/A'}</Text>
-          <Text style={styles.label}>Age: {user.age || 'N/A'}</Text>
-          <Text style={styles.label}>City: {user.city || 'N/A'}</Text>
-          <Text style={styles.label}>Contact: {user.contact || 'N/A'}</Text>
-          <Text style={styles.label}>Email: {user.email || 'N/A'}</Text>
+          <Text style={styles.label}>Name: {loggedInUser?.name || 'N/A'}</Text>
+          <Text style={styles.label}>Age: {loggedInUser?.age || 'N/A'}</Text>
+          <Text style={styles.label}>City: {loggedInUser?.city || 'N/A'}</Text>
+          <Text style={styles.label}>Contact: {loggedInUser?.contact || 'N/A'}</Text>
+          <Text style={styles.label}>Email: {loggedInUser?.email || 'N/A'}</Text>
         </View>
       </View>
-      <Footer navigation={navigation} loggedInUser={user} />
+      <Footer navigation={navigation} />
     </View>
   );
 };
