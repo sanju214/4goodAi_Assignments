@@ -1,19 +1,19 @@
 version: '3.8'
-
 services:
   backend:
     build:
-      context: ./backend/server  # Updated to the server folder
+      context: ./backend
     ports:
       - "5000:5000"
     volumes:
-      - ./backend/server:/app
+      - ./backend:/app
+      - /app/node_modules  # Add this line to preserve node_modules
     depends_on:
       - db
     environment:
       - NODE_ENV=development
-      - MONGO_URI=${MONGO_URI}  # Use environment variable for MongoDB Atlas URI
-
+      - MONGO_URI=${MONGO_URI}
+      
   frontend:
     build:
       context: ./frontend
@@ -28,7 +28,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./backend/data:/data/db
+      - ./backend/data:/data/db  # Retain or remove based on your persistence needs
 
 volumes:
-  db_data:  # Adding named volume for better persistence
+  db_data:  # Retain if persistence is required
