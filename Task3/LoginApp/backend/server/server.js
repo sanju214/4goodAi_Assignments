@@ -1,3 +1,5 @@
+require('dotenv').config(); // Load environment variables
+
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
@@ -10,10 +12,21 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // MongoDB connection
-mongoose.connect('mongodb+srv://svpad2020:9j6YNso4Nury2Eh2@cluster0.cmg6c.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0', {
+const mongoUri = process.env.MONGO_URI;
+if (!mongoUri) {
+  console.error('MongoDB URI is not defined in .env');
+  process.exit(1);
+}
+
+mongoose.connect(mongoUri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+})
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => {
+    console.error('Failed to connect to MongoDB:', err.message);
+    process.exit(1);
+  });
 
 // Define User Schema with Password Encryption
 const userSchema = new mongoose.Schema({

@@ -1,23 +1,34 @@
-version: "3.9"
+version: '3.8'
+
 services:
   backend:
     build:
-      context: ./backend/server
+      context: ./backend/server  # Updated to the server folder
     ports:
       - "5000:5000"
     volumes:
       - ./backend/server:/app
+    depends_on:
+      - db
     environment:
       - NODE_ENV=development
+      - MONGO_URI=${MONGO_URI}  # Use environment variable for MongoDB Atlas URI
 
   frontend:
     build:
       context: ./frontend
     ports:
-      - "19000:19000"
-    volumes:
-      - ./frontend:/app
-    environment:
-      - NODE_ENV=development
+      - "3000:3000"
     stdin_open: true
-    tty: true
+    environment:
+      - REACT_APP_API_URL=http://localhost:5000
+
+  db:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./backend/data:/data/db
+
+volumes:
+  db_data:  # Adding named volume for better persistence

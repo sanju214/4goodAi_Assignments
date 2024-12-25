@@ -10,6 +10,9 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
+# Install @expo/ngrok globally to avoid interactive prompts
+RUN npm install -g @expo/ngrok
+
 # Copy the rest of the application code to the container
 COPY . .
 
