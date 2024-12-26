@@ -7,6 +7,7 @@ import SignupScreen from './screens/SignupScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import HomeScreen from './screens/HomeScreen';
 import ForgotPasswordScreen from './screens/ForgotPasswordScreen';
+import SummarizeCommitsScreen from './screens/SummarizeCommitsScreen'; // Import the new screen
 
 const Stack = createStackNavigator();
 export const AuthContext = createContext(null);
@@ -91,6 +92,11 @@ const AppNavigator = () => {
           <Stack.Screen
             name="ForgotPassword"
             component={ForgotPasswordScreen}
+            options={{ headerShown: true }}
+          />
+          <Stack.Screen
+            name="SummarizeCommits"
+            component={SummarizeCommitsScreen}
             options={{ headerShown: true }}
           />
         </Stack.Navigator>

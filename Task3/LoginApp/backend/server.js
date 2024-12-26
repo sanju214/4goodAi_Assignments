@@ -5,11 +5,29 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const axios = require('axios');
 
 // Initialize Express
 const app = express();
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: true, // Allow all origins in development
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
+
+// Error handler middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    success: false,
+    error: 'Internal Server Error',
+    details: process.env.NODE_ENV === 'development' ? err.message : undefined,
+  });
+});
 
 // MongoDB connection
 const mongoUri = process.env.MONGO_URI;
@@ -18,10 +36,11 @@ if (!mongoUri) {
   process.exit(1);
 }
 
-mongoose.connect(mongoUri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
+mongoose
+  .connect(mongoUri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => {
     console.error('Failed to connect to MongoDB:', err.message);
@@ -82,7 +101,12 @@ userSchema.methods.comparePassword = async function (candidatePassword) {
 
 const User = mongoose.model('User', userSchema);
 
-// Signup API
+// Define axios instance for external API calls
+const githubApi = axios.create({
+  timeout: 30000, // Optional: Adjust timeout as needed
+});
+
+// Routes
 app.post('/signup', async (req, res) => {
   try {
     const user = new User(req.body);
@@ -93,12 +117,6 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-app.get('/', (req, res) => {
-  res.send('Backend is running!');
-});
-
-
-// Login API
 app.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -118,7 +136,6 @@ app.post('/login', async (req, res) => {
   }
 });
 
-// Profile API
 app.get('/profile/:id', async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -130,6 +147,50 @@ app.get('/profile/:id', async (req, res) => {
   } catch (error) {
     res.status(500).json({ success: false, error: error.message });
   }
+});
+
+// Summarize Commits API
+app.post("/summarize-commits", async (req, res) => {
+  const { owner, repo, model } = req.body;
+
+  if (!owner || !repo || !model) {
+    return res.status(400).json({ success: false, message: "Owner, repo, and model are required" });
+  }
+
+  try {
+    // Fetch commits from GitHub
+    const commitsResponse = await axios.get(`https://api.github.com/repos/${owner}/${repo}/commits`, {
+      headers: { Authorization: `Bearer ${process.env.GITHUB_ACCESS_TOKEN}` },
+    });
+
+    const commitMessages = commitsResponse.data.map((commit) => commit.commit.message);
+
+    // Send request to Gork AI
+    const gorkResponse = await axios.post(
+      "https://api.x.ai/v1/chat/completions",
+      {
+        model,
+        messages: commitMessages.map((message) => ({ role: "user", content: message })),
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${process.env.GORK_AI_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    res.json({ success: true, summary: gorkResponse.data.choices[0].message.content });
+  } catch (error) {
+    console.error("Error summarizing commits:", error.message);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+
+
+app.get('/', (req, res) => {
+  res.send('Backend is running!');
 });
 
 // Start the server

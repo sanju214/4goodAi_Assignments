@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Footer from '../components/Footer';
 import { AuthContext } from '../AppNavigator';
 
@@ -12,6 +12,12 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.welcomeText}>
           Welcome to the Home Screen, {loggedInUser?.name || 'Guest'}!
         </Text>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('SummarizeCommits')}
+        >
+          <Text style={styles.buttonText}>Summarize Commits</Text>
+        </TouchableOpacity>
       </View>
       <Footer navigation={navigation} />
     </View>
@@ -41,6 +47,18 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#6C63FF',
+  },
+  button: {
+    marginTop: 20,
+    backgroundColor: '#6C63FF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

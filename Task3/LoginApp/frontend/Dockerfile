@@ -13,6 +13,9 @@ RUN npm install
 # Install @expo/ngrok globally to avoid interactive prompts
 RUN npm install -g @expo/ngrok
 
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
+
 # Copy the rest of the application code to the container
 COPY . .
 
