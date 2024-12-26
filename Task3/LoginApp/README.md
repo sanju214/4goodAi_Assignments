@@ -1,106 +1,111 @@
-Login App
+LoginApp
 
-This is a simple React Native application that provides a seamless user experience for registration, login, and profile management. The app is designed to demonstrate a basic user interface and navigation system with modern UI styling, responsiveness, and core functionalities. Features
+LoginApp is a full-stack application that provides a basic user authentication system. It features a backend built with Node.js and Express, a frontend built with React, and MongoDB as the database. The app allows users to register, log in, and view their profile information.
+Features
 
-    User Registration
+    User Registration: Users can sign up with their name, email, password, age, city, and contact number.
+    User Authentication: Secure login with password hashing using bcrypt.
+    Profile Management: Users can view their profile information.
+    Frontend Interface: A React-based user interface for interacting with the backend.
+    MongoDB Integration: User data is stored in a MongoDB database.
+    Dockerized Services: Fully containerized for seamless deployment.
 
-    Users can create an account by providing basic information such as: Name Email Password Age City Contact Number Input fields are validated to ensure required data is entered correctly.
+Prerequisites
 
-    User Login
+Ensure you have the following installed on your system:
 
-    Users can log in using their registered email and password. Error messages are displayed if the credentials are invalid.
+    Docker
+    Docker Compose
 
-    Forgot Password
+Project Structure
 
-    Users can request a password reset by providing their registered email address. A reset link or similar functionality is expected to be implemented on the server side.
+LoginApp/
+├── backend/
+│   ├── server/          # Backend server code
+│   ├── data/            # MongoDB data folder (not tracked in Git)
+│   └── .env             # Environment variables for the backend
+├── frontend/            # React frontend code
+├── docker-compose.yml   # Docker Compose configuration file
+└── README.md            # Project documentation
 
-    User Profile
+Setup Instructions
+Step 1: Clone the Repository
 
-    After logging in, users are redirected to their profile page, which displays: Name Age City Contact Number Email The profile page has a welcoming message with a user avatar and a modern, visually appealing design.
+git clone <repository-url>
+cd LoginApp
 
-    Home Screen
+Step 2: Set Up Environment Variables
 
-    A dedicated home screen provides a welcoming message and can be expanded for further functionalities.
+    Navigate to the backend directory and create a .env file.
+    Add the following variables to the .env file:
 
-    Footer Navigation
+NODE_ENV=development
+MONGO_URI=mongodb+srv://<username>:<password>@<cluster-url>/<database>?retryWrites=true&w=majority
 
-    A persistent footer navigation bar allows users to easily switch between: Home Screen Profile Page The footer adapts seamlessly across the app.
+Replace <username>, <password>, <cluster-url>, and <database> with your MongoDB Atlas credentials.
+Step 3: Build and Start Docker Containers
 
-    Header with Logout
+Run the following command in the root directory of the project:
 
-    Each screen has a customized header that displays the logged-in user’s name. A Logout button in the header resets the session and redirects the user to the login screen.
+docker-compose up --build
 
-Technologies Used
+This will:
 
-React Native: Frontend framework for building the application.
-React Navigation: Navigation library for stack-based navigation and screen management.
-React Hook Form: For handling form validations and user inputs.
-Axios: For HTTP requests to the backend server.
-AsyncStorage: To manage local data persistence (e.g., session storage).
-Node.js: Backend runtime for the server.
-Express.js: For creating the backend server API.
-MongoDB: Database to store user information.
+    Build the backend and frontend services.
+    Set up the MongoDB database.
+    Start the application.
 
-Directory Structure
+Step 4: Access the Application
 
-src/ ├── components/ │ ├── Header.js # Custom header component │ ├── Footer.js # Footer navigation bar ├── screens/ │ ├── LoginScreen.js # Login page │ ├── SignupScreen.js # Registration page │ ├── ProfileScreen.js # User profile page │ ├── HomeScreen.js # Home screen │ ├── ForgotPasswordScreen.js # Password recovery screen ├── AppNavigator.js # App navigation setup server/ ├── server.js # Node.js Express server
+    Backend: Accessible at http://localhost:5000.
+    Frontend: After running check it in an App called Expo in your android or iphone phone
 
-Installation Prerequisites
+Step 5: Test the Application
 
-Node.js and npm installed on your system.
-MongoDB database (local or cloud).
-React Native CLI for running the app.
+You can test the backend APIs using tools like curl or Postman.
+Example: Register a User
 
-Client-Side Setup
+curl -X POST http://localhost:5000/signup \
+-H "Content-Type: application/json" \
+-d '{"name":"John Doe","email":"john@example.com","password":"password123","age":30,"city":"New York","contact":"1234567890"}'
 
-Clone the repository:
+Example: Login a User
 
-git clone cd
+curl -X POST http://localhost:5000/login \
+-H "Content-Type: application/json" \
+-d '{"email":"john@example.com","password":"password123"}'
 
-Install dependencies:
+Docker Compose Configuration
 
-npm install
+The docker-compose.yml file defines three services:
 
-Start the Expo development server:
+    Backend: Runs the Express server.
+        Mapped to http://localhost:5000.
+        Environment variables are loaded from the .env file in the backend directory.
 
-npx expo start
+    Frontend: Runs the React application.
+        Mapped to http://localhost:3000.
 
-Once the Expo server is running:
+    Database (MongoDB):
+        Exposes port 27017 for external connections.
+        Stores data in the backend/data directory.
 
-For Android: Scan the QR code using the Expo Go app on your device.
-For iOS: Open the Expo Go app on your iPhone and scan the QR code.
-For Web: Press w in the terminal to open the app in your web browser.
+Notes
 
-    Server-Side Setup
+    Ensure that the backend/data folder is added to .gitignore to avoid tracking database data in Git.
+    For production, consider using Docker secrets or a secure mechanism to store sensitive credentials like the MongoDB URI.
 
-    Navigate to the server directory:
+Troubleshooting
 
-cd server
+    Frontend Not Loading: Ensure that the React app is running by checking the logs of the loginapp-frontend container:
 
-Install dependencies:
+docker logs loginapp-frontend-1
 
-npm install
+Backend Not Connecting to MongoDB: Verify the MongoDB URI in the .env file and ensure the loginapp-db container is running.
 
-Start the server:
+docker ps
 
-node server.js
-
-The server will run on http://localhost:5000. Ensure this matches the URL used in the client-side axios requests.
-
-How to Run the App
-
-Start the server:
-    Make sure the server is running by navigating to the server directory and executing:
-
-node server.js
-
-Start the client:
-
-Run the React Native app by navigating to the src directory and executing:
-
-    npx expo start
-
-Open the app on an emulator or physical device.
+Database Data Persistence: If you want to retain MongoDB data across container restarts, ensure that the backend/data volume is not removed.
 
 Screenshots
 
