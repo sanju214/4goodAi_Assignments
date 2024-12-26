@@ -6,7 +6,7 @@ Features
     User Registration: Users can sign up with their name, email, password, age, city, and contact number.
     User Authentication: Secure login with password hashing using bcrypt.
     Profile Management: Users can view their profile information.
-    GithubCommit Summarizer: Using gork ai to summarize github commits.
+    GithubCommit Summarizer: Using grok ai to summarize github commits.
     Frontend Interface: A React-based user interface for interacting with the backend.
     MongoDB Integration: User data is stored in a MongoDB database.
     Dockerized Services: Fully containerized for seamless deployment.
