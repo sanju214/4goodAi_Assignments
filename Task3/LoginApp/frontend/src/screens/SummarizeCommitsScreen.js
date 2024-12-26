@@ -7,10 +7,11 @@ import {
   StyleSheet,
   ActivityIndicator,
   Platform,
-  Picker,
   ScrollView,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker"; // Ensure proper import for Picker
 import axios from "axios";
+import Markdown from "react-native-markdown-display"; // Import for Markdown rendering
 
 // Get the appropriate base URL based on platform
 const getBaseUrl = () => {
@@ -64,7 +65,7 @@ const SummarizeCommitsScreen = () => {
       console.log("Response received:", response.data);
 
       if (response.data && response.data.success) {
-        setSummary(response.data.summary);
+        setSummary(response.data.summary); // Assume summary is returned in Markdown format
       } else {
         throw new Error(response.data?.message || "Invalid response format from server");
       }
@@ -150,7 +151,7 @@ const SummarizeCommitsScreen = () => {
           <View style={styles.summaryContainer}>
             <Text style={styles.summaryTitle}>Commit Summary:</Text>
             <ScrollView style={styles.scrollableSummary}>
-              <Text style={styles.summary}>{summary}</Text>
+              <Markdown style={markdownStyles}>{summary}</Markdown>
             </ScrollView>
           </View>
         ) : null}
@@ -220,10 +221,55 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 10,
   },
-  summary: {
+});
+
+const markdownStyles = {
+  body: {
     fontSize: 16,
     lineHeight: 24,
+    color: "#333", // Dark gray for readability
+    marginBottom: 10, // Add spacing between paragraphs
   },
-});
+  heading1: {
+    fontSize: 24, // Slightly larger for better differentiation
+    fontWeight: "bold",
+    marginBottom: 12,
+    color: "#000", // Black for emphasis
+  },
+  heading2: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 10,
+    color: "#333",
+  },
+  code: {
+    fontFamily: "Courier",
+    fontSize: 14,
+    backgroundColor: "#eef2f7", // Slightly lighter for a modern look
+    padding: 8, // Increase padding for better visibility
+    borderRadius: 8, // Rounded corners for aesthetics
+    borderWidth: 1,
+    borderColor: "#ccc", // Add a border for clearer separation
+    color: "#d63384", // Distinct code color
+    overflow: "hidden", // Prevent text overflow
+  },
+  list_item: {
+    fontSize: 16,
+    color: "#333",
+    marginBottom: 8, // Add spacing between list items
+  },
+  link: {
+    color: "#1e90ff", // Use blue for links
+    textDecorationLine: "underline", // Add underline for links
+  },
+  blockquote: {
+    backgroundColor: "#f9f9f9", // Light gray for blockquotes
+    borderLeftWidth: 4,
+    borderLeftColor: "#ccc",
+    padding: 10,
+    marginVertical: 10,
+    color: "#555",
+  },
+};
 
 export default SummarizeCommitsScreen;
