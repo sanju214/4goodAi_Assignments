@@ -111,7 +111,7 @@ Database Data Persistence: If you want to retain MongoDB data across container r
 Screenshots
 
 Login Screen
-![alt text](../LoginApp/frontend/assets.login.png)
+![alt text](../LoginApp/frontend/assets/login.png)
 
 Signup Screen
 ![alt text](../LoginApp/frontend/assets/signin.png)
