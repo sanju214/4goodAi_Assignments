@@ -123,3 +123,6 @@ Home Screen
 
 Forgot Password Screen
 ![alt text](../LoginApp/frontend/assets/forget.png)
+
+Github Commit Summarizer Screen
+![alt text](../LoginApp/frontend/assets/commits.png)
