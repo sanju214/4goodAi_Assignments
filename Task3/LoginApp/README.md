@@ -120,7 +120,7 @@ Profile Screen
 ![alt text](../LoginApp/frontend/assets/profile.png)
 
 Home Screen
-![alt text](../LoginApp/frontend/assets/home.png)
+![alt text](../LoginApp/frontend/assets/home1.png)
 
 Forgot Password Screen
 ![alt text](../LoginApp/frontend/assets/forget.png)
