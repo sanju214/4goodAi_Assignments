@@ -19,9 +19,9 @@ const getBaseUrl = () => {
     return "http://localhost:5000"; // Use localhost for web
   }
   if (Platform.OS === "android") {
-    return "http://10.0.2.2:5000"; // Use 10.0.2.2 for Android emulator
+    return "http://10.0.3.2:5000"; // Use 10.0.2.2 for Android emulator
   }
-  return "http://localhost:5000"; // Default for iOS
+  return "http://192.168.0.107:5000"; // Default for iOS
 };
 
 // Create axios instance with custom config
